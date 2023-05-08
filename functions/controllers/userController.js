@@ -51,3 +51,14 @@ exports.deleteUser = async (req, res) => {
     res.status(500).send({ message: "Error deleting user", error: err });
   }
 }
+
+//block users
+
+//get users by role
+
+// follow agent
+
+// report user
+
+// get user liked listings
+
