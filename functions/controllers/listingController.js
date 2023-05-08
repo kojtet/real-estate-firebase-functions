@@ -169,3 +169,8 @@ exports.getUserListings = async (req, res) => {
         return res.status(500).json({ error: err.code });
     }
 }
+
+// get similar listings
+
+
+// get listing categories
