@@ -11,5 +11,31 @@ router.route("/:id").delete(User.deleteUser);
 
 router.route("/:id").patch(User.updateUser);
 
+router.route("/:id/notifications").post(User.addUserNotification);
+
+router.route("/:id/notifications").get(User.getUserNotifications);
+
+router.route("/:id/block").post(User.blockUser);
+
+router.route("/:id/unblock").post(User.unblockUser);
+
+router.route("/:id/blocked").get(User.getBlockedUsers);
+
+router.route("/:id/follow").post(User.followUser);
+
+router.route("/:id/unfollow").delete(User.unfollowUser);
+
+router.route("/:id/followers").get(User.getUserFollowers);
+
+router.route("/:id/following").get(User.getUserFollowing);
+
+router.route("/:id/reportUser").post(User.reportUser);
+
+router.route("/:id/likedListings").get(User.getUserLikedListings);
+
+
+
+
+
 
 module.exports = router;

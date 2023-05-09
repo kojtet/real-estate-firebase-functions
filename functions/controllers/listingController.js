@@ -174,3 +174,4 @@ exports.getUserListings = async (req, res) => {
 
 
 // get listing categories
+
