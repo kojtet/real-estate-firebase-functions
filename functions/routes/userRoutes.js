@@ -17,7 +17,7 @@ router.route("/:id/notifications").get(User.getUserNotifications);
 
 router.route("/:id/block").post(User.blockUser);
 
-router.route("/:id/unblock").post(User.unblockUser);
+router.route("/:id/unblock").delete(User.unblockUser);
 
 router.route("/:id/blocked").get(User.getBlockedUsers);
 
@@ -31,7 +31,6 @@ router.route("/:id/following").get(User.getUserFollowing);
 
 router.route("/:id/reportUser").post(User.reportUser);
 
-router.route("/:id/likedListings").get(User.getUserLikedListings);
 
 
 

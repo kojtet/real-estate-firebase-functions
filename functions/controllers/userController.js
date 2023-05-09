@@ -1,6 +1,5 @@
 // Desc: user controller
 const { db } = require("../config/config");
-const { report } = require("../routes/userRoutes");
 const collection = db.collection("users");
 const reportCollection = db.collection("reports");
 
@@ -140,8 +139,19 @@ exports.unfollowUser = async (req, res) => {
   const { id } = req.params;
   const { followId } = req.body;
   try {
-    await collection.doc(id).collection("following").doc(followId).delete();
-    await collection.doc(followId).collection("followers").doc(id).delete();
+    await collection.doc(id).collection("following").where("followerId","==", followId).get()
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
+        doc.ref.delete();
+      });
+    });
+
+    await collection.doc(followId).collection("followers").where("followerId","==", id).get()
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
+        doc.ref.delete();
+      });
+    });
     res.status(200).send("Agent Unfollowed");
   } catch (err) {
     res.status(500).send({ message: "Error Unfollowing", error: err });
@@ -191,18 +201,4 @@ exports.reportUser = async (req, res) => {
   }
 };
 
-// get user liked listings
-exports.getUserLikedListings = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const snapshot = await collection.doc(id).collection("liked").get();
-    const items = [];
-    snapshot.forEach((doc) => {
-      items.push(doc.data());
-    });
-    res.status(200).send(items);
-  } catch (err) {
-    console.log(err);
-  }
-}
 

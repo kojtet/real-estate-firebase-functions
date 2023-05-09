@@ -18,6 +18,10 @@ router.route('/search/:searchTerm').get(Listing.searchListings);
 
 router.route('/user/:id').get(Listing.getUserListings);
 
+router.route('/user/:id/liked').post(Listing.likeListing);
+
+router.route('/user/:id/liked/:userId').get(Listing.getUserLikedListings);
+
 
 
 

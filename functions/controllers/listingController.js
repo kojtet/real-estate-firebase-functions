@@ -3,16 +3,44 @@ const collection = db.collection("products");
 
 // Get all listings
 exports.getAllListings = async (req, res) => {
+    
+    const { category, price} = req.query
     try {
-        const listings = await collection.orderBy("dateCreated", "desc").get();
+        let listings = [];
+        if(category && price){   
+            listings = await collection
+            .where("category", "==", category)
+            .where("price", "<=", price)
+            .orderBy("price")
+            .orderBy("dateCreated", "desc")
+            .get();
+
+        }else if(category && !price){
+            listings = await collection
+            .where("category", "==", category)
+            .orderBy("dateCreated", "desc")
+            .get();
+            
+        }else if(!category && price){
+            listings = await collection
+            .where("price", "<=", price)
+            .orderBy("price")
+            .get();
+        }else{
+            listings = await collection.orderBy("dateCreated", "desc").get();
+        }
         let allListings = [];
         listings.forEach((doc) => {
         allListings.push(doc.data());
         });
-        return res.status(200).json(allListings);
+        return res.status(200).json({
+            parms: req.query,
+            data: allListings,
+           
+        });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: err.code });
+        return res.status(500).json({ error: err.message });
     }
 };
 
@@ -169,6 +197,37 @@ exports.getUserListings = async (req, res) => {
         return res.status(500).json({ error: err.code });
     }
 }
+
+exports.likeListing = async (req, res) => {
+    try {
+        const listing = await collection.doc(req.params.id).get();
+        if (!listing.exists) {
+        return res.status(404).json({ error: "Listing not found" });
+        }
+        await collection.doc(req.params.id).update({
+        favouritedBy: admin.firestore.FieldValue.arrayUnion(req.body.userId),
+        });
+        return res.status(200).json({ message: "Listing liked successfully" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message });
+    }
+}
+
+exports.getUserLikedListings = async (req, res) => {
+    try {
+        const listings = await collection.where("favouritedBy", "array-contains", req.params.id).get();
+        let allListings = [];
+        listings.forEach((doc) => {
+        allListings.push(doc.data());
+        });
+        return res.status(200).json(allListings);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.code });
+    }
+}
+
 
 // get similar listings
 
