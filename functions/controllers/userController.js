@@ -2,6 +2,7 @@
 const { db } = require("../config/config");
 const collection = db.collection("users");
 const reportCollection = db.collection("reports");
+const products = db.collection("products");
 
 //update user
 exports.updateUser = async (req, res) => {
@@ -200,5 +201,44 @@ exports.reportUser = async (req, res) => {
     res.status(500).send({ message: "Error Reporting", error: err });
   }
 };
+
+// like listing
+
+exports.likeListing = async (req, res) => {
+  const { id, userId} = req.params;
+  const document = products.doc(id);
+  const listing = await document.get();
+  try {
+    if (!listing.exists) {
+      return res.status(404).json({ error: "Listing not found" });
+      }
+      await document.update({
+          favouritedBy: admin.firestore.FieldValue.arrayUnion(userId)
+      });
+    await collection.doc(userId).collection("likes").add({listingId: id});
+    await products.doc(id).update({favouritedBy: FieldValue.arrayUnion(userId)})
+    res.status(200).send("Listing Liked");
+  }
+  catch (err) {
+    res.status(500).send({ message: "Error Liking", error: err.message });
+  }
+};
+
+// get liked listings
+exports.getLikedListings = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const snapshot = await collection.doc(id).collection("likes").get();
+    const items = [];
+    snapshot.forEach((doc) => {
+      items.push(doc.data());
+    });
+    res.status(200).send(items);
+  } catch (err) {
+    console.log(err);
+
+  }
+}
+
 
 

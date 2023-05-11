@@ -12,15 +12,14 @@ router.route('/:id').delete(Listing.deleteListing);
 
 router.route('/:id').patch(Listing.updateListing);
 
-router.route('/filter').get(Listing.filterListings);
-
 router.route('/search/:searchTerm').get(Listing.searchListings);
 
 router.route('/user/:id').get(Listing.getUserListings);
 
-router.route('/user/:id/liked').post(Listing.likeListing);
+router.route('/MyListings/:id').get(Listing.getUserListings);
 
-router.route('/user/:id/liked/:userId').get(Listing.getUserLikedListings);
+router.route('/similar/:id/:category').get(Listing.getSimilarListings);
+
 
 
 

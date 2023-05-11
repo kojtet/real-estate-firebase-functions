@@ -31,6 +31,10 @@ router.route("/:id/following").get(User.getUserFollowing);
 
 router.route("/:id/reportUser").post(User.reportUser);
 
+router.route("/like/:userId/:id").post(User.likeListing);
+
+router.route("/liked/:id").get(User.getLikedListings);
+
 
 
 

@@ -140,31 +140,6 @@ exports.deleteListing = async (req, res) => {
     }
 }
 
-// filter listings by price, location, category, typeOfPurchase, numberOfRooms, numberOfBaths, rentFrequency
-exports.filterListings = async (req, res) => {
-    try {
-        const listings = await collection
-        .where('price', '>=', req.body.minPrice)
-        .where('price', '<=', req.body.maxPrice)
-        .where('location', '==', req.body.location)
-        .where('category', '==', req.body.category)
-        .where('typeOfPurchase', '==', req.body.typeOfPurchase)
-        .where('numberOfRooms', '==', req.body.numberOfRooms)
-        .where('numberOfBaths', '==', req.body.numberOfBaths)
-        .where('rentFrequency', '==', req.body.rentFrequency)
-        .get();
-        let allListings = [];
-        listings.forEach((doc) => {
-        allListings.push(doc.data());
-        });
-        return res.status(200).json(allListings);
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: err.code });
-    }
-}
-
-
 // search listings by keywords
 exports.searchListings = async (req, res) => {
     try {
@@ -194,43 +169,59 @@ exports.getUserListings = async (req, res) => {
         return res.status(200).json(allListings);
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: err.code });
-    }
-}
-
-exports.likeListing = async (req, res) => {
-    try {
-        const listing = await collection.doc(req.params.id).get();
-        if (!listing.exists) {
-        return res.status(404).json({ error: "Listing not found" });
-        }
-        await collection.doc(req.params.id).update({
-        favouritedBy: admin.firestore.FieldValue.arrayUnion(req.body.userId),
-        });
-        return res.status(200).json({ message: "Listing liked successfully" });
-    } catch (err) {
-        console.log(err);
         return res.status(500).json({ error: err.message });
     }
 }
 
-exports.getUserLikedListings = async (req, res) => {
+// get similar listings
+exports.getSimilarListings = async (req, res) => {
     try {
-        const listings = await collection.where("favouritedBy", "array-contains", req.params.id).get();
+        const {category, id} = req.params;
+        const listings = await collection
+        .where("category", "==", category)
+        .where("id", "!=", id)
+        .limit(4)
+        .get();
         let allListings = [];
         listings.forEach((doc) => {
         allListings.push(doc.data());
         });
         return res.status(200).json(allListings);
     } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+}
+
+exports.getLikedListings = async (req, res) => {   
+    try {
+        const {id} = req.params;
+        const listings = await collection
+        .where("favouritedBy", "array-contains", id)
+        .get();
+        let allListings = [];
+        listings.forEach((doc) => {
+        allListings.push(doc.data());
+        });
+        return res.status(200).json(allListings);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+}
+
+exports.addlikedListing = async (req, res) => {
+    try {
+        const {id, userId} = req.params;
+        const document = collection.doc(id);
+        const listing = await document.get();
+        if (!listing.exists) {
+        return res.status(404).json({ error: "Listing not found" });
+        }
+        await document.update({
+            favouritedBy: admin.firestore.FieldValue.arrayUnion(userId)
+        });
+        return res.status(200).json({ message: "Listing updated successfully" });
+    } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.code });
     }
 }
-
-
-// get similar listings
-
-
-// get listing categories
-
