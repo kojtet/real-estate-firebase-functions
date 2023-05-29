@@ -31,7 +31,10 @@ exports.getAllListings = async (req, res) => {
         }
         let allListings = [];
         listings.forEach((doc) => {
-        allListings.push(doc.data());
+        allListings.push({
+            id: doc.id,
+            data: doc.data()
+        });
         });
         return res.status(200).json({
             parms: req.query,
