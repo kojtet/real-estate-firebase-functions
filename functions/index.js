@@ -10,6 +10,7 @@ const agencyRouter = require("./routes/agencyRoutes");
 const listingRouter = require("./routes/listingRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
 const locationsRouter = require("./routes/locationsRoutes");
+const adminRouter = require("./routes/adminRoutes")
 
 
 app.use(cors({ origin: true }));
@@ -19,6 +20,7 @@ app.use(express.json());
 //routes
 
 app.use("/app/v1/users", userRouter);
+app.use("/app/v1/admin", adminRouter);
 app.use("/app/v1/agents", agentRouter);
 app.use("/app/v1/providers", providerRouter);
 app.use("/app/v1/agencies", agencyRouter);

@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const Listing = require('../controllers/listingController')
+const Listing = require('../controllers/listingController');
 
 router.route('/').get(Listing.getAllListings);
+
+router.route('/featured').get(Listing.getFeaturedListings);
 
 router.route('/:id').get(Listing.getListing);
 
@@ -12,13 +14,12 @@ router.route('/:id').delete(Listing.deleteListing);
 
 router.route('/:id').patch(Listing.updateListing);
 
-router.route('/search/:searchTerm').get(Listing.searchListings);
-
 router.route('/user/:id').get(Listing.getUserListings);
 
 router.route('/MyListings/:id').get(Listing.getUserListings);
 
-router.route('/similar/:id/:category').get(Listing.getSimilarListings);
+router.route('/similar/:id/').get(Listing.getSimilarListings);
+
 
 
 

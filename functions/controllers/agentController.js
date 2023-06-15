@@ -5,8 +5,8 @@ const collection = db.collection("users");
 
 exports.getAgents = async (req, res) => {
     try{
-         const snapshot = await collection.where("role", "==", "Agent").orderby("email").get();
-         const items = [];
+         const snapshot = await collection.orderby("email").get();
+         let items = [];
          snapshot.forEach((doc) => {
                 items.push(doc.data());
             });

@@ -18,12 +18,22 @@ exports.updateUser = async (req, res) => {
 
 //get all users
 exports.getUsers = async (req, res) => {
+  const {role} = req.query;
   try {
-    const snapshot = await collection.get();
-    const items = [];
-    snapshot.forEach((doc) => {
-      items.push(doc.data());
-    });
+    let items = [];
+    if(role){
+      const snapshot = await collection.where("role", "==", role).orderBy("name", "asc").get();
+      snapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+    }
+    else{
+      const snapshot = await collection.get();
+      snapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+    }
+
     res.status(200).send(items);
   } catch (err) {
     res.status(500).send(err);
@@ -239,6 +249,11 @@ exports.getLikedListings = async (req, res) => {
 
   }
 }
+
+//add activity
+
+
+//get user activities
 
 
 

@@ -4,10 +4,137 @@ const collection = db.collection("products");
 // Get all listings
 exports.getAllListings = async (req, res) => {
     
-    const { category, price} = req.query
+    const { category, price, featured, featuredSales, region, city, suburb } = req.query
     try {
         let listings = [];
-        if(category && price){   
+        if (category && region && city && suburb){
+            listings = await collection
+            .where("category", "==", category)
+            .where("region", "==", region)
+            .where("city","==",city)
+            .where("keywords","array-contains",suburb)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (category && !region && !city && !suburb){
+            listings = await collection
+            .where("category", "==", category)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (category && region && !city && !suburb){
+            listings = await collection
+            .where("category", "==", category)
+            .where("region", "==", region)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (category && region && city && !suburb){
+            listings = await collection
+            .where("category", "==", category)
+            .where("region", "==", region)
+            .where("city","==",city)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (category && region && !city && suburb){
+            listings = await collection
+            .where("category", "==", category)
+            .where("region", "==", region)
+            .where("keywords","array-contains",suburb)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (category && !region && city && suburb){
+            listings = await collection
+            .where("category", "==", category)
+            .where("city","==",city)
+            .where("keywords","array-contains",suburb)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (!category && region && city && suburb){
+            listings = await collection
+            .where("region", "==", region)
+            .where("city","==",city)
+            .where("keywords","array-contains",suburb)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (!category && region && !city && !suburb){
+            listings = await collection
+            .where("region", "==", region)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (!category && region && city && !suburb){
+            listings = await collection
+            .where("region", "==", region)
+            .where("city","==",city)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (!category && region && !city && suburb){
+            listings = await collection
+            .where("region", "==", region)
+            .where("keywords","array-contains",suburb)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (category && region && city && !suburb){
+            listings = await collection
+            .where("region", "==", region)
+            .where("city","==",city)
+            .where("category","==",category)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (category && region && !city && suburb){
+            listings = await collection
+            .where("region", "==", region)
+            .where("keywords","array-contains",suburb)
+            .where("category","==",category)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+
+        //city
+        else if (!category && !region && city && !suburb){
+            listings = await collection
+            .where("city","==",city)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (!category && !region && city && suburb){
+            listings = await collection
+            .where("keywords","array-contains",suburb)
+            .where("city","==",city)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+        else if (!category && !region && !city && suburb){
+            listings = await collection
+            .where("keywords","array-contains",suburb)
+            .orderBy("dateCreated", "desc")
+            .orderBy("price")
+            .get();
+        }
+
+        else if(category && price){   
             listings = await collection
             .where("category", "==", category)
             .where("price", "<=", price)
@@ -15,39 +142,38 @@ exports.getAllListings = async (req, res) => {
             .orderBy("dateCreated", "desc")
             .get();
 
-        }else if(category && !price){
+            
+        
+        }else if (featured){
             listings = await collection
-            .where("category", "==", category)
+            .where("featured", "==", "Yes")
+            .where("typeOfPurchase", "==", "For Rent")
             .orderBy("dateCreated", "desc")
             .get();
-            
-        }else if(!category && price){
+        }
+        else if (featuredSales){
             listings = await collection
-            .where("price", "<=", price)
-            .orderBy("price")
+            .where("featured", "==", "Yes")
+            .where("typeOfPurchase", "==", "For Sale") 
+            .orderBy("dateCreated", "desc")
             .get();
-        }else{
+        }
+        else{
             listings = await collection.orderBy("dateCreated", "desc").get();
         }
         let allListings = [];
         listings.forEach((doc) => {
         allListings.push({
+            data: doc.data(),
             id: doc.id,
-            data: doc.data()
         });
         });
-        return res.status(200).json({
-            parms: req.query,
-            data: allListings,
-           
-        });
+        return res.status(200).send(allListings);
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.message });
     }
 };
-
-
 // Get a single listing
 exports.getListing = async (req, res) => {
     try {
@@ -61,8 +187,6 @@ exports.getListing = async (req, res) => {
         return res.status(500).json({ error: err.code });
     }
 }
-
-
 // Create a listing
 exports.createListing = async (req, res) => {
     try {
@@ -75,8 +199,8 @@ exports.createListing = async (req, res) => {
         detailDescription: req.body.detailDescription,
         favouritedBy: [],
         images: req.body.images,
-        keywords: req.body.keywords,
-        location: req.body.location,
+        keywords: [req.body.address, req.body.title, req.body.category, req.body.city],
+        location: {lattitude:0, longitude:0},
         price: req.body.price,
         numberOfBaths: req.body.numberOfBaths,
         numberOfRooms: req.body.numberOfRooms,
@@ -102,15 +226,20 @@ exports.createListing = async (req, res) => {
         plots: req.body.plots,
         wasteManagement: req.body.wasteManagement,
         dateCreated: new Date().toISOString(),
+        garage: req.body.garage,
+        suburb: req.body.suburb,
+
         };
         const listing = await collection.add(newListing);
-        return res.status(201).json({ message: `Listing ${listing.id} created successfully` });
+        return res.status(201).json({ 
+            message: `Listing ${listing.id} created successfully`,
+            id: listing.id
+        });
     } catch (err) {
         console.log(err);
         return res.status(500).json( err.message );
     }
 }
-
 // Update a listing
 exports.updateListing = async (req, res) => {
     try {
@@ -126,7 +255,6 @@ exports.updateListing = async (req, res) => {
         return res.status(500).json({ error: err.code });
     }
 }
-
 // Delete a listing
 exports.deleteListing = async (req, res) => {
     try {
@@ -142,34 +270,36 @@ exports.deleteListing = async (req, res) => {
         return res.status(500).json({ error: err.code });
     }
 }
-
-// search listings by keywords
-exports.searchListings = async (req, res) => {
-    try {
-        const {searchTerm} = req.params;
-        const listings = await collection
-        .where('keywords', 'array-contains', searchTerm)
-        .get();
-        let allListings = [];
-        listings.forEach((doc) => {
-        allListings.push(doc.data());
-        });
-        return res.status(200).json(allListings);
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: err.code });
-    }
-}
-
 // Get all listings by a user
 exports.getUserListings = async (req, res) => {
     try {
         const listings = await collection.where("createdBy", "==", req.params.id).get();
         let allListings = [];
         listings.forEach((doc) => {
-        allListings.push(doc.data());
+            allListings.push({
+                data: doc.data(),
+                id: doc.id,
+            });
         });
         return res.status(200).json(allListings);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message });
+    }
+}
+
+//get featured listings
+exports.getFeaturedListings = async (req, res) => {
+    try {
+        const listings = await collection.where("featured", "==", "Yes").get();
+        let allListings = [];
+        listings.forEach((doc) => {
+            allListings.push({
+                data: doc.data(),
+                id: doc.id,
+            });
+        });
+        return res.status(200).send(allListings);
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.message });
@@ -179,17 +309,21 @@ exports.getUserListings = async (req, res) => {
 // get similar listings
 exports.getSimilarListings = async (req, res) => {
     try {
-        const {category, id} = req.params;
+        const {id} = req.params;
+        const { category, typeOfPurchase} = req.query;
         const listings = await collection
         .where("category", "==", category)
+        .where("typeOfPurchase", "==", typeOfPurchase)
         .where("id", "!=", id)
-        .limit(4)
         .get();
         let allListings = [];
         listings.forEach((doc) => {
-        allListings.push(doc.data());
+            allListings.push({
+            data: doc.data(),
+            id: doc.id,
         });
-        return res.status(200).json(allListings);
+        });
+        return res.status(200).send(allListings);
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -203,7 +337,10 @@ exports.getLikedListings = async (req, res) => {
         .get();
         let allListings = [];
         listings.forEach((doc) => {
-        allListings.push(doc.data());
+            allListings.push({
+                data: doc.data(),
+                id: doc.id,
+            });
         });
         return res.status(200).json(allListings);
     } catch (err) {
@@ -222,7 +359,7 @@ exports.addlikedListing = async (req, res) => {
         await document.update({
             favouritedBy: admin.firestore.FieldValue.arrayUnion(userId)
         });
-        return res.status(200).json({ message: "Listing updated successfully" });
+        return res.status(200).json({ message: "Listing liked successfully" });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.code });
