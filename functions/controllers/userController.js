@@ -163,5 +163,51 @@ exports.getUserNotifications = async (req, res) => {
   }
 };
 
-// Additional endpoints (block/unblock user, follow/unfollow user, etc.)
-// Use similar patterns as shown for consistent and maintainable code.
+// Block User
+exports.blockUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await collection.doc(id).update({ blocked: true });
+    res.status(200).send({ message: "User blocked successfully." });
+  } catch (err) {
+    res.status(500).send({ message: "Error blocking user", error: err.message });
+  }
+};
+
+// Unblock User
+exports.unblockUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await collection.doc(id).update({ blocked: false });
+    res.status(200).send({ message: "User unblocked successfully." });
+  } catch (err) {
+    res.status(500).send({ message: "Error unblocking user", error: err.message });
+  }
+};
+
+// Follow User
+exports.followUser = async (req, res) => {
+  const { id } = req.params;
+  const { followId } = req.body;
+  try {
+    await collection.doc(id).collection("following").doc(followId).set({
+      userId: followId,
+      followedAt: new Date(),
+    });
+    res.status(200).send({ message: "User followed successfully." });
+  } catch (err) {
+    res.status(500).send({ message: "Error following user", error: err.message });
+  }
+};
+
+// Unfollow User
+exports.unfollowUser = async (req, res) => {
+  const { id } = req.params;
+  const { followId } = req.body;
+  try {
+    await collection.doc(id).collection("following").doc(followId).delete();
+    res.status(200).send({ message: "User unfollowed successfully." });
+  } catch (err) {
+    res.status(500).send({ message: "Error unfollowing user", error: err.message });
+  }
+};
