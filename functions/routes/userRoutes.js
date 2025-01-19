@@ -1,44 +1,43 @@
 const express = require("express");
 const User = require("../controllers/userController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.route("/").get(User.getUsers);
+// User Authentication Routes
+router.route("/signup").post(User.signup);
+router.route("/signin").post(User.signin);
 
-router.route("/:id").get(User.getUserById)
+// User Management Routes
+router.route("/")
+  .get(authMiddleware, User.getUsers);
 
-router.route("/:id").delete(User.deleteUser);
+router.route("/:id")
+  .get(authMiddleware, User.getUserById)
+  .delete(authMiddleware, User.deleteUser)
+  .patch(authMiddleware, User.updateUser);
 
-router.route("/:id").patch(User.updateUser);
+// User Notifications
+router.route("/:id/notifications")
+  .post(authMiddleware, User.addUserNotification)
+  .get(authMiddleware, User.getUserNotifications);
 
-router.route("/:id/notifications").post(User.addUserNotification);
+// Block/Unblock Users
+router.route("/:id/block").post(authMiddleware, User.blockUser);
+router.route("/:id/unblock").delete(authMiddleware, User.unblockUser);
+router.route("/:id/blocked").get(authMiddleware, User.getBlockedUsers);
 
-router.route("/:id/notifications").get(User.getUserNotifications);
+// Follow/Unfollow Users
+router.route("/:id/follow").post(authMiddleware, User.followUser);
+router.route("/:id/unfollow").delete(authMiddleware, User.unfollowUser);
+router.route("/:id/followers").get(authMiddleware, User.getUserFollowers);
+router.route("/:id/following").get(authMiddleware, User.getUserFollowing);
 
-router.route("/:id/block").post(User.blockUser);
+// Report User
+router.route("/:id/reportUser").post(authMiddleware, User.reportUser);
 
-router.route("/:id/unblock").delete(User.unblockUser);
-
-router.route("/:id/blocked").get(User.getBlockedUsers);
-
-router.route("/:id/follow").post(User.followUser);
-
-router.route("/:id/unfollow").delete(User.unfollowUser);
-
-router.route("/:id/followers").get(User.getUserFollowers);
-
-router.route("/:id/following").get(User.getUserFollowing);
-
-router.route("/:id/reportUser").post(User.reportUser);
-
-router.route("/like/:userId/:id").post(User.likeListing);
-
-router.route("/liked/:id").get(User.getLikedListings);
-
-
-
-
-
-
+// Liked Listings
+router.route("/like/:userId/:id").post(authMiddleware, User.likeListing);
+router.route("/liked/:id").get(authMiddleware, User.getLikedListings);
 
 module.exports = router;

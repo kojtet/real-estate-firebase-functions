@@ -1,15 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Location = require('../controllers/locationsController');
+const Location = require("../controllers/locationsController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.get('/regions', Location.getRegions);
+// Get all regions
+router.get("/regions", authMiddleware, Location.getRegions);
 
-router.get('/cities', Location.getSchemeCities);
+// Get all scheme cities
+router.get("/cities", authMiddleware, Location.getSchemeCities);
 
-router.get('/cities/:id', Location.getCity);
+// Get a single city by ID
+router.get("/cities/:id", authMiddleware, Location.getCity);
 
-router.post('/regions', Location.addRegion);
+// Add a new region
+router.post("/regions", authMiddleware, Location.addRegion);
 
-router.post('/cities', Location.addCity);
+// Add a new city
+router.post("/cities", authMiddleware, Location.addCity);
 
 module.exports = router;

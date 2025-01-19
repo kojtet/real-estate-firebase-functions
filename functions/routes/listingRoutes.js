@@ -1,29 +1,30 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Listing = require('../controllers/listingController');
+const Listing = require("../controllers/listingController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.route('/').get(Listing.getAllListings);
+// Get all listings
+router.get("/", authMiddleware, Listing.getAllListings);
 
-router.route('/featured').get(Listing.getFeaturedListings);
+// Get featured listings
+router.get("/featured", authMiddleware, Listing.getFeaturedListings);
 
-router.route('/:id').get(Listing.getListing);
+// Get a single listing
+router.get("/:id", authMiddleware, Listing.getListing);
 
-router.route('/').post(Listing.createListing);
+// Create a new listing
+router.post("/", authMiddleware, Listing.createListing);
 
-router.route('/:id').delete(Listing.deleteListing);
+// Update a listing
+router.patch("/:id", authMiddleware, Listing.updateListing);
 
-router.route('/:id').patch(Listing.updateListing);
+// Delete a listing
+router.delete("/:id", authMiddleware, Listing.deleteListing);
 
-router.route('/user/:id').get(Listing.getUserListings);
+// Get listings by user
+router.get("/user/:id", authMiddleware, Listing.getUserListings);
 
-router.route('/MyListings/:id').get(Listing.getUserListings);
-
-router.route('/similar/:id/').get(Listing.getSimilarListings);
-
-
-
-
-
-
+// Get similar listings
+router.get("/similar/:id", authMiddleware, Listing.getSimilarListings);
 
 module.exports = router;
