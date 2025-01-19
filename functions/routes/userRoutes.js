@@ -33,11 +33,11 @@ router.route("/:id/unfollow").delete(authMiddleware, User.unfollowUser);
 router.route("/:id/followers").get(authMiddleware, User.getUserFollowers);
 router.route("/:id/following").get(authMiddleware, User.getUserFollowing);
 
-// Report User
-router.route("/:id/reportUser").post(authMiddleware, User.reportUser);
+// // Report User
+// router.route("/:id/reportUser").post(authMiddleware, User.reportUser);
 
-// Liked Listings
-router.route("/like/:userId/:id").post(authMiddleware, User.likeListing);
-router.route("/liked/:id").get(authMiddleware, User.getLikedListings);
+// // Liked Listings
+// router.route("/like/:userId/:id").post(authMiddleware, User.likeListing);
+// router.route("/liked/:id").get(authMiddleware, User.getLikedListings);
 
 module.exports = router;
