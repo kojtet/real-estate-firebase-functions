@@ -23,12 +23,12 @@ router.route("/:id/notifications")
   .get(authMiddleware, User.getUserNotifications);
 
 // Block/Unblock Users
-router.route("/:id/block").post(authMiddleware, User.blockUser);
+// router.route("/:id/block").post(authMiddleware, User.blockUser);
 router.route("/:id/unblock").delete(authMiddleware, User.unblockUser);
 router.route("/:id/blocked").get(authMiddleware, User.getBlockedUsers);
 
 // Follow/Unfollow Users
-router.route("/:id/follow").post(authMiddleware, User.followUser);
+// router.route("/:id/follow").post(authMiddleware, User.followUser);
 router.route("/:id/unfollow").delete(authMiddleware, User.unfollowUser);
 router.route("/:id/followers").get(authMiddleware, User.getUserFollowers);
 router.route("/:id/following").get(authMiddleware, User.getUserFollowing);
