@@ -29,9 +29,9 @@ router.route("/:id/blocked").get(authMiddleware, User.getBlockedUsers);
 
 // Follow/Unfollow Users
 // router.route("/:id/follow").post(authMiddleware, User.followUser);
-router.route("/:id/unfollow").delete(authMiddleware, User.unfollowUser);
-router.route("/:id/followers").get(authMiddleware, User.getUserFollowers);
-router.route("/:id/following").get(authMiddleware, User.getUserFollowing);
+// router.route("/:id/unfollow").delete(authMiddleware, User.unfollowUser);
+// router.route("/:id/followers").get(authMiddleware, User.getUserFollowers);
+// router.route("/:id/following").get(authMiddleware, User.getUserFollowing);
 
 // // Report User
 // router.route("/:id/reportUser").post(authMiddleware, User.reportUser);

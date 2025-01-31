@@ -211,3 +211,14 @@ exports.unfollowUser = async (req, res) => {
     res.status(500).send({ message: "Error unfollowing user", error: err.message });
   }
 };
+
+// Get Blocked Users
+exports.getBlockedUsers = async (req, res) => {
+  try {
+    const snapshot = await collection.where("blocked", "==", true).get();
+    const blockedUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.status(200).send(blockedUsers);
+  } catch (err) {
+    res.status(500).send({ message: "Error fetching blocked users", error: err.message });
+  }
+};
